@@ -10,4 +10,4 @@ I needed an excuse to publish a C# program. I've been using C# in a while but mo
 
 [---Misc.---]
 
-Note: If there are any bugs/issue please let me know.
+Note: If there are any bugs/issue please let me know. Faster versions of hangman are avaliable on this website; this one is not as effecient as others.
