@@ -129,7 +129,7 @@ class hangman_prgm
 
             if (_letter_is_correct == false)
             {
-                add_limbs++; //Fix the adding limb number system! (10/16/22)
+                add_limbs++;
                 hangman_disp_add(add_limbs);
             }
         }
