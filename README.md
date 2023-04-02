@@ -1,4 +1,4 @@
-**Simple Hangman*
+** Simple Hangman
 
 [----Purpose----]
 
