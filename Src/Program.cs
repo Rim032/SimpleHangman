@@ -98,7 +98,7 @@ class hangman_prgm
             }
         }
 
-        //Displaying the number bar.
+        //Displaying the letter bar.
         for (int b = 0; b < correct_word.Length; b++)
         {
             Console.Write(letter_bar[b]);
