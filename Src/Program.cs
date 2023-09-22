@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 
@@ -16,7 +16,7 @@ class hangman_prgm
         Thread.Sleep(250);
 
         string[] letter_bar = { "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_" };
-        bool game_over = false;
+        short game_status = 0;
         string[] chosen_word = generate_rand_word().Split('.');
 
 
@@ -24,28 +24,28 @@ class hangman_prgm
         string correct_letter = hangman_guess(chosen_word);
 
 
-        while (game_over == false)
+        while (game_status == 0)
         {
-            hangman_display(chosen_word, correct_letter, letter_bar);
-            correct_letter = hangman_guess(chosen_word);
+            game_status = hangman_win_lose_determine(letter_bar, chosen_word);
 
-            if (hangman_win_lose_determine(letter_bar, chosen_word) == 1)
+            if (game_status != 0)
             {
                 Console.WriteLine("\n");
-
                 hangman_display(chosen_word, correct_letter, letter_bar);
-                Console.WriteLine("\nYou lost!");
 
-                game_over = true;
+                if (game_status == 1)
+                {
+                    Console.WriteLine("\n\nYou lost!");
+                }
+                else
+                {
+                    Console.WriteLine("\n\nYou won!");
+                }
             }
-            else if (hangman_win_lose_determine(letter_bar, chosen_word) == 2)
+            else
             {
-                Console.WriteLine("\n");
-
                 hangman_display(chosen_word, correct_letter, letter_bar);
-                Console.WriteLine("\nYou win!");
-
-                game_over = true;
+                correct_letter = hangman_guess(chosen_word);
             }
         }
 
@@ -66,6 +66,12 @@ class hangman_prgm
 
     private static void hangman_display(string[] correct_word, string correct_letter, string[] letter_bar)
     {
+        if(correct_word == null || correct_letter == null || letter_bar == null)
+        {
+            Console.WriteLine("[ERROR]: One or more function parameters are null (hangman_display).");
+            return;
+        }
+
         //Displaying the actual "hangman."
         for (int j = 0; j < 4; j++)
         {
@@ -87,18 +93,15 @@ class hangman_prgm
         //Changing the letter bar if needed.
         for (int a = 0; a < correct_word.Length; a++)
         {
-            if (letter_bar[a] == "_" && correct_letter != null)
+            if (letter_bar[a] == "_" && correct_word[a] == correct_letter)
             {
-                if (correct_word[a] == correct_letter)
-                {
-                    letter_bar[a] = correct_letter;
-                    letters_added++;
-                    break;
-                }
+                letter_bar[a] = correct_letter;
+                letters_added++;
+                break;
             }
         }
 
-        //Displaying the letter bar.
+        //Displaying the number bar.
         for (int b = 0; b < correct_word.Length; b++)
         {
             Console.Write(letter_bar[b]);
@@ -110,6 +113,11 @@ class hangman_prgm
 
     private static string hangman_guess(string[] correct_word)
     {
+        if(correct_word == null)
+        {
+            Console.WriteLine("[ERROR]: The given hangman word is null.");
+        }
+
         string user_attempt;
         short correct_arr_pos = 0;
         bool _letter_is_correct = false;
@@ -118,20 +126,26 @@ class hangman_prgm
         try
         {
             user_attempt = (Console.ReadLine()).ToLower();
-
-            for (int n = 0; n < correct_word.Length; n++)
+            if (user_attempt != null)
             {
-                if (user_attempt != null && user_attempt == correct_word[n].ToLower())
+                for (int n = 0; n < correct_word.Length; n++)
                 {
-                    _letter_is_correct = true;
-                    correct_arr_pos = (short)n;
+                    if (user_attempt == correct_word[n].ToLower())
+                    {
+                        _letter_is_correct = true;
+                        correct_arr_pos = (short)n;
+                    }
                 }
+            }
+            else
+            {
+                Console.WriteLine("[ERROR]: NULL input for a guess.");
             }
 
             if (_letter_is_correct == false)
             {
                 add_limbs++;
-                hangman_disp_add(add_limbs);
+                hangman_disp_add();
             }
         }
         catch (Exception error)
@@ -142,7 +156,7 @@ class hangman_prgm
         return correct_word[correct_arr_pos];
     }
 
-    private static void hangman_disp_add(int add_limbs)
+    private static void hangman_disp_add()
     {
         switch (add_limbs)
         {
@@ -169,18 +183,21 @@ class hangman_prgm
 
     private static short hangman_win_lose_determine(string[] letter_bar, string[] correct_word)
     {
-        short game_end_c = 0;
-
-        if (hangman_disp[1, 3] == "O" && hangman_disp[2, 3] == "|" && hangman_disp[2, 2] == "/" && hangman_disp[2, 4] == "\\" && hangman_disp[3, 3] == "/" && hangman_disp[3, 4] == "\\")
+        if(letter_bar == null || correct_word == null)
         {
-            game_end_c = 1;
+            Console.WriteLine("[ERROR]: One or more function parameters are null (hangman_win_lose_determine).");
+        }
+
+        if (add_limbs >= 6)
+        {
+            return 1;
         }
 
         if (letters_added >= correct_word.Length)
         {
-            game_end_c = 2;
+            return 2;
         }
 
-        return game_end_c;
+        return 0;
     }
 }
